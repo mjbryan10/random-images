@@ -103,6 +103,7 @@
             let rNum = generateRandom(0, remArray.length, excludeNum);
             excludeNum.push(rNum); //Builds excluded array. 
             lastImg.push(rNum); //Builds history 
+            console.log("TCL: randomiser -> lastImg", lastImg)
             
             if (excludeNum.length === remArray.length) {
                 excludeNum.splice(0, excludeNum.length);
@@ -129,9 +130,10 @@
             for (let img of imgTags) {
                 if (!Array.isArray(lastImg) || !lastImg.length){ //does nothing if array doesnt exist or is empty. 
                 } else if (lastImg.length >1){ //if array exists and has length 
+                    console.log("TCL: goBack -> lastImg", lastImg)
                     if (!img.classList.contains('active')) { //targets the hidden img. 
                         img.src = imgArray[lastImg[(lastImg.length - 2)]]; //Goes back 2 b/c last pos is current img
-                        if(lastImg.length>2){ // only when array has 3+ 
+                        if(lastImg.length>1){ // UPDATE: only when array has 2+ 
                         lastImg.splice((lastImg.length - 1),2); // deletes 2 (current and new current)
                         }
                     }
