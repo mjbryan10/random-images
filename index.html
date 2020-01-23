@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Random iamges</title>
+    <style>
+        .carousel-container {
+            display: block;
+            height: 400px;
+        }
+
+        .carousel-container img {
+            position: absolute;
+            z-index: 0;
+            opacity: 0;
+            transition: 2s;
+        }
+
+        /* .carousel-container img:first-of-type{
+            z-index: 100;
+        }
+        .carousel-container img:nth-child(2){
+            z-index: 0;
+        } */
+        .carousel-container img.active {
+            opacity: 1;
+            /* z-index: 100; */
+        }
+    </style>
+</head>
+
+<body>
+    <button>&#8249;</button>
+    <div id="random_container" class="carousel-container">
+        <img id="img_1" src="images/baseball.jpg" alt="Sports" class="active" />
+        <img id="img_2" src="images/cross.jpg" alt="Sports" />
+    </div>
+    <button id="random_btn">&#8250;</button>
+    <script>
+        const randDiv = document.getElementById('random_container');
+        const random_btn = document.getElementById('random_btn');
+        const img1 = document.getElementById('img_1');
+
+
+        let imgArray = [
+            "images/baseball.jpg",
+            "images/cross.jpg",
+            "images/cycling.jpg",
+            "images/football.jpg",
+            "images/icehockey.jpg",
+            "images/mix.jpg",
+            "images/soccer.jpg",
+            "images/tennis.jpg",
+            "images/tennistable.jpg"
+        ];
+        let excludeNum = [0, 1];
+
+
+        function randomiser() {
+            let remArray = [...imgArray];
+
+            function generateRandom(min, max, failOn) {
+                failOn = Array.isArray(failOn) ? failOn : [failOn]
+                var num = Math.floor(Math.random() * (max - min)) + min;
+                return failOn.includes(num) ? generateRandom(min, max, failOn) : num;
+            }
+
+            let rNum = generateRandom(0, remArray.length, excludeNum);
+            excludeNum.push(rNum);
+
+            if (excludeNum.length === remArray.length) {
+                excludeNum.splice(0, excludeNum.length);
+            }
+            //REBUILDING CAROUSEL
+            let imgTags = document.querySelectorAll('.carousel-container img');
+
+            for (let img of imgTags) {
+                console.log("TCL: i", img)
+                if (!img.classList.contains('active')) {
+                    img.src = imgArray[rNum];
+                }
+                img.classList.toggle('active');
+
+
+            }
+            clearInterval(carouselInterval);
+            carouselInterval = setInterval(randomiser, 3000);
+        }
+        random_btn.addEventListener("click", randomiser);
+        var carouselInterval = setInterval(randomiser, 3000);
+        carouselInterval;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      //DANGER MESSY WORK BELOW
+        /*
+                let imgArrayAlt = [];
+                let currentSrcIndexs = [];
+                function randomiser() {
+                    imgArrayAlt = [...imgArray];
+                    currentSrcIndexs = [];
+                    console.log("TCL: randomiser -> currentSrcIndexs", currentSrcIndexs)
+                    // console.log("TCL: randomiser -> imgArrayAlt", imgArrayAlt)
+                    let imgTags = document.querySelectorAll('.carousel-container img');
+                    console.log("TCL: randomiser -> imgTags", imgTags)
+
+                    // console.log("TCL: randomiser -> imgTags", imgTags)
+                    // console.log("TCL: randomiser -> currentSrcIndexs", currentSrcIndexs)
+                    for (const i of imgTags) {
+                        currentSrcIndexs.push(imgArray.indexOf(i.getAttribute('src')));
+                        console.log("TCL: randomiser -> currentSrcIndexs", currentSrcIndexs)
+                        // console.log("TCL: randomiser -> imgArray", imgArray)
+                        // console.log("TCL: randomiser -> currentSrcIndexs", currentSrcIndexs)
+                    }
+                    // console.log("TCL: imgArrayAlt", imgArrayAlt)
+                    for (let i = currentSrcIndexs.length - 1; i >= 0; i--) {
+                        imgArrayAlt = imgArrayAlt.splice(currentSrcIndexs[i], 1); // ISSUE?
+                    }
+                    // console.log("TCL: imgArrayAlt", imgArrayAlt) //7 indexes
+                    for (let img of imgTags){
+                        let tempExclude = null;
+                        if (!img.classList.contains('active')){
+                            // function randomExcluded(min, max, excluded) {
+                            //     do {
+                            //         var n = Math.floor(Math.random() * (max - min) + min);
+                            //     } while (n === excluded);
+                            //     return n;
+                            // }
+                            // let num = randomExcluded(0, imgArrayAlt.length, tempExclude);
+                            img.src = imgArrayAlt[num];
+                            tempExclude = num;
+                        }
+                        setTimeout(function(){img.classList.toggle('active');}, 1000)
+
+                    }
+                //     clearInterval(carouselInterval);
+                //     carouselInterval = setInterval(randomiser, 3000);
+                // }
+
+                // random_btn.addEventListener("click", randomiser);
+                // var carouselInterval = setInterval(randomiser, 3000);
+                // carouselInterval;
+        */
+
+
+        /*
+
+                function randomiser() {
+                    let imgTags = document.querySelectorAll('.carousel-container img');
+                    let currentSrcIndexs = [];
+                    for (let image of imgTags) {
+                        image.classList.toggle('active');
+
+
+                        // console.log("TCL: randomiser -> imgTags", imgTags)
+
+                        currentSrcIndexs.push(imgArray.indexOf(image.getAttribute('src')));
+                        console.log("TCL: randomiser -> currentSrcIndexs", currentSrcIndexs)
+
+
+                        let imgArrayAlt = imgArray;
+                        // console.log("TCL: imgArrayAlt", imgArrayAlt)
+                        for (let i = currentSrcIndexs.length - 1; i >= 0; i--) {
+                            imgArrayAlt.splice(currentSrcIndexs[i], 1);
+
+                        }
+                        if (!image.classList.contains('active')) {
+                            num = Math.floor(Math.random() * imgArrayAlt.length);
+                            // console.log("TCL: randomiser -> num", num)
+                            image.src = imgArrayAlt[num];
+                        }
+                    }
+                        // currentSrcs.push(image.getAttribute('src'));
+                        // console.log("TCL: randomiser -> currentSrcs", currentSrcs)
+                        // // console.log("TCL: randomiser -> image", image)
+
+
+
+                        //     if (image.classList.contains('active')) {
+                        //         let lastSrc = image.getAttribute('src');
+                        //         let lastSrcIndex = imgArray.indexOf(lastSrc);
+                        //         function randomExcluded(min, max, excluded) {
+                        //             do {
+                        //                 var n = Math.floor(Math.random() * (max - min) + min);
+                        //             } while (n === excluded);
+                        //             return n;
+                        //         }
+
+                        //         num = randomExcluded(0, maxArrayLength, lastSrcIndex);
+                        //         // console.log("TCL: randomiser -> num", num)
+                        //         image.src = imgArray[num];
+                        //         lastSrc = img1.getAttribute('src');
+                        //     }
+                        // }
+        */
+                      // clearInterval(carouselInterval);
+                      // carouselInterval = setInterval(randomiser, 6000);
+    </script>
+</body>
+
+</html>
