@@ -7,43 +7,75 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge" />
     <title>Random iamges</title>
     <style>
+        .page-container {
+            display: flex;
+            flex-flow: row nowrap;
+        }
         .carousel-container {
             display: block;
             height: 400px;
+            width: 600px;
         }
-
         .carousel-container img {
             position: absolute;
             z-index: 0;
             opacity: 0;
             transition: 2s;
         }
-
-        /* .carousel-container img:first-of-type{
-            z-index: 100;
-        }
-        .carousel-container img:nth-child(2){
-            z-index: 0;
-        } */
         .carousel-container img.active {
             opacity: 1;
-            /* z-index: 100; */
+        }
+        button {
+            height: 400px;
+        }
+        button {
+            display: inline-block;
+            border: none;
+            padding: 1rem 1rem;
+            margin: 0;
+            text-decoration: none;
+            background: rgba(0,0,0,.8);
+            color: #ffffff;
+            font-family: sans-serif;
+            font-size: 3rem;
+            cursor: pointer;
+            text-align: center;
+            transition: background 250ms ease-in-out,
+                transform 150ms ease;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+        }
+
+        button:hover,
+        button:focus {
+            background: rgba(0,0,0,1);
+        }
+        button:focus {
+            outline: 1px dotted rgba(255,255,255,.3);
+            outline-offset: -4px;
+        }
+        button:active {
+            transform: scale(0.99);
         }
     </style>
 </head>
 
 <body>
-    <button>&#8249;</button>
-    <div id="random_container" class="carousel-container">
-        <img id="img_1" src="images/baseball.jpg" alt="Sports" class="active" />
-        <img id="img_2" src="images/cross.jpg" alt="Sports" />
+    <div class="page-container">
+        <button id="back_btn">&#8249;</button>
+        <div id="random_container" class="carousel-container">
+            <img id="img_1" src="images/baseball.jpg" alt="Sports" class="active" />
+            <img id="img_2" src="images/cross.jpg" alt="Sports" />
+        </div>
+        <button id="random_btn">&#8250;</button>
     </div>
-    <button id="random_btn">&#8250;</button>
     <script>
+        //IDs ---
         const randDiv = document.getElementById('random_container');
         const random_btn = document.getElementById('random_btn');
+        const back_btn = document.getElementById('back_btn');
         const img1 = document.getElementById('img_1');
-
+        //---
 
         let imgArray = [
             "images/baseball.jpg",
@@ -57,38 +89,64 @@
             "images/tennistable.jpg"
         ];
         let excludeNum = [0, 1];
-
+        let lastImg = [...excludeNum];
 
         function randomiser() {
-            let remArray = [...imgArray];
+            let remArray = [...imgArray]; //refreshes array. (incase mutations req.)
 
-            function generateRandom(min, max, failOn) {
-                failOn = Array.isArray(failOn) ? failOn : [failOn]
-                var num = Math.floor(Math.random() * (max - min)) + min;
-                return failOn.includes(num) ? generateRandom(min, max, failOn) : num;
+            function generateRandom(min, max, failOn) { 
+                failOn = Array.isArray(failOn) ? failOn : [failOn] //Checks if array or string
+                var num = Math.floor(Math.random() * (max - min)) + min; //Generates random num 
+                return failOn.includes(num) ? generateRandom(min, max, failOn) : num; //returns num or recurrs
             }
 
             let rNum = generateRandom(0, remArray.length, excludeNum);
-            excludeNum.push(rNum);
-
+            excludeNum.push(rNum); //Builds excluded array. 
+            lastImg.push(rNum); //Builds history 
+            
             if (excludeNum.length === remArray.length) {
                 excludeNum.splice(0, excludeNum.length);
             }
-            //REBUILDING CAROUSEL
-            let imgTags = document.querySelectorAll('.carousel-container img');
 
+            if (lastImg.length > 20) { //Stops array getting too big. 
+                lastImg.splice(0, 3);
+            }
+            //CAROUSEL ---
+            let imgTags = document.querySelectorAll('.carousel-container img');
             for (let img of imgTags) {
-                console.log("TCL: i", img)
-                if (!img.classList.contains('active')) {
+                if (!img.classList.contains('active')) { //targets the hidden img. 
                     img.src = imgArray[rNum];
                 }
                 img.classList.toggle('active');
+            }
+            //---
+            clearInterval(carouselInterval);
+            carouselInterval = setInterval(randomiser, 3000);
+        }
 
-
+        function goBack() {
+            let imgTags = document.querySelectorAll('.carousel-container img');
+            for (let img of imgTags) {
+                if (!Array.isArray(lastImg) || !lastImg.length){ //does nothing if array doesnt exist or is empty. 
+                } else if (lastImg.length >1){ //if array exists and has length 
+                    if (!img.classList.contains('active')) { //targets the hidden img. 
+                        img.src = imgArray[lastImg[(lastImg.length - 2)]]; //Goes back 2 b/c last pos is current img
+                        if(lastImg.length>2){ // only when array has 3+ 
+                        lastImg.splice((lastImg.length - 1),2); // deletes 2 (current and new current)
+                        }
+                    }
+                        img.classList.toggle('active');
+                } else{
+                    img.classList.toggle('active');
+                }
             }
             clearInterval(carouselInterval);
             carouselInterval = setInterval(randomiser, 3000);
         }
+        
+
+
+        back_btn.addEventListener("click", goBack);
         random_btn.addEventListener("click", randomiser);
         var carouselInterval = setInterval(randomiser, 3000);
         carouselInterval;
