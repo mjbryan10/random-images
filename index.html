@@ -41,23 +41,12 @@
 
 			.carousel-container img {
 				position: absolute;
-
-				/* float: left; */
 				z-index: 0;
 				opacity: 0;
 				transition: 2s;
-				/* height: 100%; */
 				height: 200px;
 			}
-
-			/* .carousel-container:first-child {
-            float: left;
-        }
-        */
-			/* .carousel-container:last-child {
-            margin-left: -200px;
-        }  */
-
+			
 			.carousel-container img.active {
 				opacity: 1;
 			}
@@ -121,9 +110,6 @@
 					<img src="images/tennistable.jpg" alt="Sports" class="active" />
 					<img src="images/baseball.jpg" alt="Sports" />
 				</div>
-
-				<!-- <img id="img_1" src="images/baseball.jpg" alt="Sports" class="active" />
-            <img id="img_2" src="images/cross.jpg" alt="Sports" /> -->
 			</div>
 			<button id="random_btn">&#8250;</button>
 		</div>
@@ -155,25 +141,27 @@
 				function generateRandom(exclusions) {
 					let possibleNum = [];
 					if (exclusions.length === remArray.length) {
+						//Refreshes exclusion list if it runs out.
 						exclusions.splice(0, exclusions.length);
 					}
 					for (let i = 0; i < remArray.length; i++) {
+						//Populates array of possible numbers 
 						possibleNum.push(i);
 					}
-
 					for (const ex of exclusions) {
+						//Removes the excluded numbers from possible array
 						let index = possibleNum.indexOf(ex);
 						possibleNum.splice(index, 1);
 					}
 
 					let ranNum = Math.floor(Math.random() * possibleNum.length);
-					let n = possibleNum[ranNum];
+					//Outputs a number between 0 and possibility length
+					let n = possibleNum[ranNum]; //uses the above to index one of our rem. numbers
 					excludeNum.push(n); //Builds excluded array.
 					lastImg.push(n); //Builds history
 					return n;
 				}
 
-				//Create array of not allowed list. Then remove those numbers from the list of possibilities. then pick a random number from there
 
 				if (lastImg.length > 20) {
 					//Stops array getting too big.
@@ -197,76 +185,34 @@
 
 			function goBack() {
 				let imgTags = document.querySelectorAll(".carousel-container img");
-				let mostRecent = [...lastImg].splice(lastImg.length - 8, 4);
-                console.log("TCL: goBack -> lastImg", lastImg)
+				let count = 0; // no. imgages w/o active, to be able to pick from 4 most recent
+				let mostRecent = lastImg.splice(lastImg.length - 8, 4); //Takes prev. 4 images shown
                 console.log("TCL: goBack -> mostRecent", mostRecent)
-				
-
-				let count = 0;
 				for (let i = 0; i < imgTags.length; i++) {
-					// console.log("TCL: goBack -> i", i);
 					let img = imgTags[i];
-
 					if (!Array.isArray(lastImg) || !lastImg.length) {
                         //does nothing if array doesnt exist or is empty.
 					} else if (lastImg.length >= 8) {
-                        //if array exists and has length
-                        
+                        //if array exists and has length enough
                         if (!img.classList.contains("active")) {//targets the hidden img.
 							img.src = imgArray[mostRecent[count]]; //Goes back 2 b/c last pos is current img
-                            console.log("TCL: goBack -> mostRecent[count]", mostRecent[count])
                             count += 1;
-							
 						}
 						img.classList.toggle("active");
 					} else {
-                        console.log('failed')
 						img.classList.toggle("active");
 					}
 				}
-
 				clearInterval(carouselInterval);
 				carouselInterval = setInterval(randomiser, 3000);
 			}
-
+			//FUNCTION CALLS ---
 			back_btn.addEventListener("click", goBack);
 			random_btn.addEventListener("click", randomiser);
 			var carouselInterval = setInterval(randomiser, 3000);
             carouselInterval;
             randomiser();
-
-			/*
-        function goBack() {
-            let imgTags = document.querySelectorAll('.carousel-container img');
-            for (let img of imgTags) { //need to go backwards
-                if (!Array.isArray(lastImg) || !lastImg.length) { //does nothing if array doesnt exist or is empty. 
-                } else if (lastImg.length > 4) { //if array exists and has length 
-                    
-
-                    if (!img.classList.contains('active')) { //targets the hidden img. 
-                        img.src = imgArray[lastImg[(lastImg.length - 5)]]; //Goes back 2 b/c last pos is current img
-                        console.log("TCL: goBack -> img.src", img.src)
-                        if (lastImg.length > 5) { // UPDATE: only when array has 2+ 
-                            lastImg.splice((lastImg.length - 1), 5); // deletes 2 (current and new current)
-                        }
-                    }
-                    img.classList.toggle('active');
-                } else {
-                    img.classList.toggle('active');
-                }
-            }
-            clearInterval(carouselInterval);
-            carouselInterval = setInterval(randomiser, 3000);
-        }
-*/
-
-			/*
-                function generateRandom(min, max, failOn) {
-                    failOn = Array.isArray(failOn) ? failOn : [failOn] //Checks if array or string
-                    var num = Math.floor(Math.random() * (max - min)) + min; //Generates random num
-                    return failOn.includes(num) ? generateRandom(min, max, failOn) : num; //returns num or recurrs
-                }
-        */
+			// ---
 		</script>
 	</body>
 </html>
